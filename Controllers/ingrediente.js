@@ -1,78 +1,91 @@
-const fs = require('fs');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient()
 
 //return all ingredientes
 exports.getAll = async (req, res) => {
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //returns ingredientes array
-    return res.send(data.ingredientes);
+    try {
+        //read all from database
+        const response = await prisma.ingredientes.findMany();
+        res.status(200).json(response)
+    } catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
 }
 
 //return ingrediente by his id (ingrediente id)
 exports.getById = async (req, res) => {
     //get ingrediente id requested
     const id = req.params.id;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //finds ingrediente by his id
-    const ingrediente = data.ingredientes.filter(ingrediente => ingrediente.id == id);
-    //return ingrediente
-    res.send(ingrediente);
+    try {
+        //finds ingrediente by his id (id)
+        const response = await prisma.ingredientes.findUnique({
+            where: {
+                id: Number(id),
+            },
+        })
+        //return ingrediente
+        res.status(200).json(response)
+    } catch (error) {
+        res.status(404).json({ msg: error.message })
+    }
 }
 
 //creates ingrediente
 exports.create = async (req, res) => {
     //get requested ingrediente properties
-    const {id, nome, quantidade} = req.body;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //add to ingredientes array
-    data.ingredientes.push(req.body);
-    //add to ingredientes array
-    fs.writeFileSync('data/local/data.json', JSON.stringify(data));
-    //return new ingrediente
-    return res.status(201).send(req.body);
+    const { nome, quantidade } = req.body;
+    try {
+        //creates new ingrediente
+        const ingrediente = await prisma.ingredientes.create({
+            data: {
+                nome: nome,
+                quantidade: quantidade
+            },
+        })
+        //return ingrediente created
+        res.status(201).json(ingrediente)
+    } catch (error) {
+        res.status(400).json({ msg: error.message })
+    }
 }
 
 //updates ingrediente
 exports.update = async (req, res) => {
-    const {id, nome, quantidade} = req.body;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8");
-    //parse to json
-    const data = JSON.parse(datajson);
-    //find ingrediente to update
-    const ingrediente = data.ingredientes.find(ingrediente => ingrediente.id == id);
-    //update properties
-    ingrediente.id = id;
-    ingrediente.nome = nome;
-    ingrediente.quantidade = quantidade;
-    //update local database
-    fs.writeFileSync('data/local/data.json', JSON.stringify(data));
-    //return updated ingrediente
-    return res.send({id, nome, quantidade});
+    const { id, nome, quantidade } = req.body;
+
+    try {
+        //find ingrediente to update their data
+        const ingrediente = await prisma.ingredientes.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                id: id,
+                nome: nome,
+                quantidade: quantidade
+            },
+        })
+        //return ingrediente updated
+        res.status(200).json(ingrediente)
+    } catch (error) {
+        res.status(400).json({ msg: error.message })
+    }
 }
 
 //delete ingrediente by his id (ingrediente id)
 exports.delete = async (req, res) => {
     //get ingrediente id requested
     const id = req.params.id;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //find ingrediente to delete
-    const ingrediente = data.ingredientes.filter(ingrediente => ingrediente.id == id);
-    //delete ingrediente
-    data.ingredientes.splice(ingrediente, 1);
-    //update local database
-    fs.writeFileSync('data/local/data.json', JSON.stringify(data));
-    //return ok
-    return res.status(200).send("ok");
+    try {
+        //delete ingrediente
+        await prisma.ingredientes.delete({
+            where: {
+                id: Number(id),
+            },
+        })
+        //just return ok
+        res.status(200).send("ok");
+    } catch (error) {
+        res.status(400).json({ msg: error.message })
+    }
 }

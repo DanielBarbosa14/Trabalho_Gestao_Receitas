@@ -9,3 +9,40 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Agendas {
+    id    Int     @id @default(autoincrement())
+    dia String
+    mes String 
+    ano String
+    diasemana String
+}
+
+model Categorias {
+    id    Int     @id @default(autoincrement())
+    descricao String
+    receitas receitas []
+}
+
+model Ingredientes {
+    id    Int     @id @default(autoincrement())
+    nome String  
+    quantidade  String
+}
+
+model receitas {
+    id    Int     @id @default(autoincrement())
+    nome String  @unique
+    tempo  String
+    graus String
+    categoria Categorias @relation(fields: [categoriaId], references: [id])
+    categoriaId Int
+}
+
+model Users{
+    id String  @id @default(uuid())
+    name String  @db.VarChar(255)
+    email String @unique
+    password String
+    isAdmin   Boolean @default(false)
+}

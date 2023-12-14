@@ -1,5 +1,5 @@
 const receitasRouter = require('express').Router();
-const controller = require('../../controllers/receita');
+const controller = require('../controllers/receita');
 
 receitasRouter.get('/', controller.getAll);
 receitasRouter.get('/:id', controller.getById);

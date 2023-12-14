@@ -1,5 +1,5 @@
 const categoriasRouter = require('express').Router();
-const controller = require('../../controllers/categoria');
+const controller = require('../controllers/categoria');
 
 categoriasRouter.get('/', controller.getAll);
 categoriasRouter.get('/:id', controller.getById);

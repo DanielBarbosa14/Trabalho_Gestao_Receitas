@@ -1,5 +1,5 @@
 const agendasRouter = require('express').Router();
-const controller = require('../../controllers/agenda');
+const controller = require('../controllers/agenda');
 
 agendasRouter.get('/', controller.getAll);
 agendasRouter.get('/:id', controller.getById);

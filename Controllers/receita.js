@@ -1,79 +1,95 @@
-const fs = require('fs');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient()
 
 //return all receitas
 exports.getAll = async (req, res) => {
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //returns receitas array
-    return res.send(data.receitas);
+    try {
+        //read all from database
+        const response = await prisma.receitas.findMany();
+        res.status(200).json(response)
+    } catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
 }
 
 //return receita by his id (receita id)
 exports.getById = async (req, res) => {
     //get receita id requested
     const id = req.params.id;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //finds receita by his id
-    const receita = data.receitas.filter(receita => receita.id == id);
-    //return receita
-    res.send(receita);
+    try {
+        //finds receita by his id (id)
+        const response = await prisma.receitas.findUnique({
+            where: {
+                id: Number(id),
+            },
+        })
+        //return receita
+        res.status(200).json(response)
+    } catch (error) {
+        res.status(404).json({ msg: error.message })
+    }
 }
 
 //creates receita
 exports.create = async (req, res) => {
     //get requested receita properties
-    const {id, nome, tempo, graus} = req.body;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //add to receitas array
-    data.receitas.push(req.body);
-    //add to receitas array
-    fs.writeFileSync('data/local/data.json', JSON.stringify(data));
-    //return new receita
-    return res.status(201).send(req.body);
+    const { nome, tempo, graus, categoriaId } = req.body;
+    try {
+        //creates new receita
+        const receita = await prisma.receitas.create({
+            data: {
+                nome: nome,
+                tempo: tempo,
+                graus: graus,
+                categoriaId: categoriaId
+            },
+        })
+        //return receita created
+        res.status(201).json(receita)
+    } catch (error) {
+        res.status(400).json({ msg: error.message })
+    }
 }
 
 //updates receita
 exports.update = async (req, res) => {
-    const {id, nome, tempo, graus} = req.body;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8");
-    //parse to json
-    const data = JSON.parse(datajson);
-    //find receita to update
-    const receita = data.receitas.find(receita => receita.id == id);
-    //update properties
-    receita.id = id;
-    receita.nome = nome;
-    receita.tempo = tempo;
-    receita.graus= graus;
-    //update local database
-    fs.writeFileSync('data/local/data.json', JSON.stringify(data));
-    //return updated receita
-    return res.send({id, nome, tempo, graus});
+    const { id, nome, tempo, graus, categoriaId } = req.body;
+
+    try {
+        //find receita to update their data
+        const receita = await prisma.receitas.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                id: id,
+                nome: nome,
+                tempo: tempo,
+                graus: graus,
+                categoriaId: categoriaId
+            },
+        })
+        //return receita updated
+        res.status(200).json(receita)
+    } catch (error) {
+        res.status(400).json({ msg: error.message })
+    }
 }
 
 //delete receita by his id (receita id)
 exports.delete = async (req, res) => {
     //get receita id requested
     const id = req.params.id;
-    //read local data json file
-    const datajson = fs.readFileSync("data/local/data.json", "utf-8"); 
-    //parse to json
-    const data = JSON.parse(datajson);
-    //find receita to delete
-    const receita = data.receitas.filter(receita => receita.id == id);
-    //delete receita
-    data.receitas.splice(receita, 1);
-    //update local database
-    fs.writeFileSync('data/local/data.json', JSON.stringify(data));
-    //return ok
-    return res.status(200).send("ok");
+    try {
+        //delete receita
+        await prisma.receitas.delete({
+            where: {
+                id: Number(id),
+            },
+        })
+        //just return ok
+        res.status(200).send("ok");
+    } catch (error) {
+        res.status(400).json({ msg: error.message })
+    }
 }
