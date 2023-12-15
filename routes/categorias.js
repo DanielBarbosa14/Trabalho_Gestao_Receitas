@@ -5,6 +5,6 @@ categoriasRouter.get('/', controller.getAll);
 categoriasRouter.get('/:id', controller.getById);
 categoriasRouter.post('/create', controller.create);
 categoriasRouter.put('/update', controller.update);
-categoriasRouter.delete('/delete', controller.delete);
+categoriasRouter.delete('/delete/:id', controller.delete);
 
 module.exports = categoriasRouter;
