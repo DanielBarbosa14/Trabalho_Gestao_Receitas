@@ -5,6 +5,6 @@ ingredientesRouter.get('/', controller.getAll);
 ingredientesRouter.get('/:id', controller.getById);
 ingredientesRouter.post('/create', controller.create);
 ingredientesRouter.put('/update', controller.update);
-ingredientesRouter.delete('/delete', controller.delete);
+ingredientesRouter.delete('/delete/:id', controller.delete);
 
 module.exports = ingredientesRouter;

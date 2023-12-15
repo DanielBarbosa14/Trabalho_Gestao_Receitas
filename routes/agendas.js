@@ -5,6 +5,6 @@ agendasRouter.get('/', controller.getAll);
 agendasRouter.get('/:id', controller.getById);
 agendasRouter.post('/create', controller.create);
 agendasRouter.put('/update', controller.update);
-agendasRouter.delete('/delete', controller.delete);
+agendasRouter.delete('/delete/:id', controller.delete);
 
 module.exports = agendasRouter;

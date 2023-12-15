@@ -5,6 +5,6 @@ receitasRouter.get('/', controller.getAll);
 receitasRouter.get('/:id', controller.getById);
 receitasRouter.post('/create', controller.create);
 receitasRouter.put('/update', controller.update);
-receitasRouter.delete('/delete', controller.delete);
+receitasRouter.delete('/delete/:id', controller.delete);
 
 module.exports = receitasRouter;
