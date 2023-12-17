@@ -1,5 +1,8 @@
 const categoriasRouter = require('express').Router();
 const controller = require('../controllers/categoria');
+const authMiddleware = require('../middlewares/auth');
+
+categoriasRouter.use(authMiddleware);
 
 categoriasRouter.get('/', controller.getAll);
 categoriasRouter.get('/:id', controller.getById);
