@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 exports.getAll = async (req, res) => {
     try {
         //read all from database
-        const response = await prisma.receitas.findMany();
+        const response = await prisma.receitas.findMany( {include: {categoria: true}});
         res.status(200).json(response)
     } catch (error) {
         res.status(500).json({ msg: error.message })
