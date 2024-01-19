@@ -5,6 +5,7 @@ const ingredienteRouter = require('./ingredientes');
 const receitaRouter = require('./receitas');
 const authRouter = require('./auth');
 
+
 router.use('/agendas', agendaRouter);
 router.use('/categorias', categoriaRouter);
 router.use('/ingredientes', ingredienteRouter);
